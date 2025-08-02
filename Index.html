@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Academic Scheduler</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="dark-mode">
+  <div class="container">
+    <h1>Smart Academic Scheduler</h1>
+    <p>Port City International University</p>
+
+    <div class="form-group">
+      <input type="text" id="subjectInput" placeholder="Enter subject name" />
+      <select id="daySelect">
+        <option value="Monday">Monday</option>
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        <option value="Friday">Friday</option>
+      </select>
+      <input type="time" id="startTime" />
+      <input type="time" id="endTime" />
+      <button onclick="addSchedule()">Add</button>
+    </div>
+
+    <table id="routineTable">
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Day</th>
+          <th>Start</th>
+          <th>End</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Routine Rows Here -->
+      </tbody>
+    </table>
+
+    <div class="actions">
+      <button onclick="downloadRoutine()">Download as Image</button>
+      <button onclick="toggleMode()">Toggle Dark/Light Mode</button>
+    </div>
+
+    <footer>
+      Developed by Fatehin Alam
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
