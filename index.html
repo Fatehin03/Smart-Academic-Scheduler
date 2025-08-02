@@ -2,50 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Smart Academic Scheduler</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="dark-mode">
+<body>
   <div class="container">
-    <h1>Smart Academic Scheduler</h1>
-    <p>Port City International University</p>
+    <header>
+      <h1>Smart Academic Scheduler</h1>
+      <p>Fatehin Alam – Port City International University</p>
+      <button onclick="toggleDarkMode()">🌓</button>
+    </header>
+    
+    <section class="form-section">
+      <input type="text" id="section" placeholder="Section (e.g., CSE-31B)">
+      <input type="text" id="subject" placeholder="Subject">
+      <input type="text" id="day" placeholder="Day">
+      <input type="text" id="time" placeholder="Time">
+      <button onclick="addSchedule()">Add Schedule</button>
+    </section>
 
-    <div class="form-group">
-      <input type="text" id="subjectInput" placeholder="Enter subject name" />
-      <select id="daySelect">
-        <option value="Monday">Monday</option>
-        <option value="Tuesday">Tuesday</option>
-        <option value="Wednesday">Wednesday</option>
-        <option value="Thursday">Thursday</option>
-        <option value="Friday">Friday</option>
-      </select>
-      <input type="time" id="startTime" />
-      <input type="time" id="endTime" />
-      <button onclick="addSchedule()">Add</button>
-    </div>
-
-    <table id="routineTable">
-      <thead>
-        <tr>
-          <th>Subject</th>
-          <th>Day</th>
-          <th>Start</th>
-          <th>End</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Routine Rows Here -->
-      </tbody>
-    </table>
-
-    <div class="actions">
-      <button onclick="downloadRoutine()">Download as Image</button>
-      <button onclick="toggleMode()">Toggle Dark/Light Mode</button>
-    </div>
+    <section>
+      <table id="schedule-table">
+        <thead>
+          <tr>
+            <th>Section</th>
+            <th>Subject</th>
+            <th>Day</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
 
     <footer>
-      Developed by Fatehin Alam
+      <button onclick="downloadAsImage()">Download Routine</button>
     </footer>
   </div>
 
