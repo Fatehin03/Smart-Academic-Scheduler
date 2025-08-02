@@ -1,63 +1,53 @@
-// script.js
-const table = document.getElementById("routineTable").querySelector("tbody");
-let schedule = [];
+let isDark = false;
+
+function toggleDarkMode() {
+  isDark = !isDark;
+  document.body.classList.toggle('dark', isDark);
+}
 
 function addSchedule() {
-  const subject = document.getElementById("subjectInput").value.trim();
-  const day = document.getElementById("daySelect").value;
-  const start = document.getElementById("startTime").value;
-  const end = document.getElementById("endTime").value;
+  const section = document.getElementById("section").value.trim();
+  const subject = document.getElementById("subject").value.trim();
+  const day = document.getElementById("day").value.trim();
+  const time = document.getElementById("time").value.trim();
 
-  if (!subject || !start || !end) {
-    alert("Please fill all fields.");
+  if (!section || !subject || !day || !time) {
+    alert("Please fill in all fields.");
     return;
   }
 
-  const conflict = schedule.some(s => s.day === day && (
-    (start >= s.start && start < s.end) ||
-    (end > s.start && end <= s.end) ||
-    (start <= s.start && end >= s.end)
-  ));
+  const tbody = document.querySelector("#schedule-table tbody");
+  const rows = tbody.querySelectorAll("tr");
 
-  if (conflict) {
-    alert("Schedule conflict detected!");
-    return;
+  for (let row of rows) {
+    const rowDay = row.cells[2].innerText;
+    const rowTime = row.cells[3].innerText;
+    if (day === rowDay && time === rowTime) {
+      alert("⚠️ Conflict: Another subject is already scheduled at this time.");
+      return;
+    }
   }
 
-  schedule.push({ subject, day, start, end });
-  updateTable();
-  clearFields();
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td>${section}</td><td>${subject}</td><td>${day}</td><td>${time}</td>`;
+  tbody.appendChild(tr);
+
+  document.getElementById("section").value = "";
+  document.getElementById("subject").value = "";
+  document.getElementById("day").value = "";
+  document.getElementById("time").value = "";
 }
 
-function updateTable() {
-  table.innerHTML = "";
-  schedule.forEach(s => {
-    const row = document.createElement("tr");
-    row.innerHTML = `<td>${s.subject}</td><td>${s.day}</td><td>${s.start}</td><td>${s.end}</td>`;
-    table.appendChild(row);
-  });
-}
-
-function clearFields() {
-  document.getElementById("subjectInput").value = "";
-  document.getElementById("startTime").value = "";
-  document.getElementById("endTime").value = "";
-}
-
-function toggleMode() {
-  document.body.classList.toggle("light-mode");
-  document.body.classList.toggle("dark-mode");
-}
-
-function downloadRoutine() {
+function downloadAsImage() {
   html2canvas(document.querySelector(".container")).then(canvas => {
-    const link = document.createElement("a");
-    link.download = "routine.png";
+    const link = document.createElement('a');
+    link.download = 'routine.png';
     link.href = canvas.toDataURL();
     link.click();
   });
 }
 
-const script = document.createElement('script');
-script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+// Add html2canvas library
+const script = document.createElement("script");
+script.src = "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
 document.head.appendChild(script);
