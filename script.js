@@ -1,53 +1,69 @@
-let isDark = false;
+// script.js
+let fullText = "";
 
-function toggleDarkMode() {
-  isDark = !isDark;
-  document.body.classList.toggle('dark', isDark);
-}
+document.getElementById("fileInput").addEventListener("change", async function () {
+  const file = this.files[0];
+  if (!file) return;
 
-function addSchedule() {
-  const section = document.getElementById("section").value.trim();
-  const subject = document.getElementById("subject").value.trim();
-  const day = document.getElementById("day").value.trim();
-  const time = document.getElementById("time").value.trim();
-
-  if (!section || !subject || !day || !time) {
-    alert("Please fill in all fields.");
-    return;
+  if (file.type === "application/pdf") {
+    const reader = new FileReader();
+    reader.onload = async function () {
+      const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(reader.result) }).promise;
+      let text = "";
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        text += content.items.map((s) => s.str).join(" ") + "\n";
+      }
+      fullText = text;
+      populateSections(text);
+    };
+    reader.readAsArrayBuffer(file);
+  } else if (file.name.endsWith(".docx")) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      mammoth.extractRawText({ arrayBuffer: e.target.result }).then((res) => {
+        fullText = res.value;
+        populateSections(res.value);
+      });
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    alert("Unsupported file format!");
   }
+});
 
-  const tbody = document.querySelector("#schedule-table tbody");
-  const rows = tbody.querySelectorAll("tr");
-
-  for (let row of rows) {
-    const rowDay = row.cells[2].innerText;
-    const rowTime = row.cells[3].innerText;
-    if (day === rowDay && time === rowTime) {
-      alert("⚠️ Conflict: Another subject is already scheduled at this time.");
-      return;
-    }
-  }
-
-  const tr = document.createElement("tr");
-  tr.innerHTML = `<td>${section}</td><td>${subject}</td><td>${day}</td><td>${time}</td>`;
-  tbody.appendChild(tr);
-
-  document.getElementById("section").value = "";
-  document.getElementById("subject").value = "";
-  document.getElementById("day").value = "";
-  document.getElementById("time").value = "";
-}
-
-function downloadAsImage() {
-  html2canvas(document.querySelector(".container")).then(canvas => {
-    const link = document.createElement('a');
-    link.download = 'routine.png';
-    link.href = canvas.toDataURL();
-    link.click();
+function populateSections(text) {
+  const matches = [...text.matchAll(/CSE[-_ ]?\d{2,3}[ -]*[A-D]/gi)];
+  const uniqueSections = [...new Set(matches.map((m) => m[0].toUpperCase()))];
+  const selector = document.getElementById("sectionSelector");
+  selector.innerHTML = "<option>Select Section</option>";
+  uniqueSections.forEach((sec) => {
+    const opt = document.createElement("option");
+    opt.value = sec;
+    opt.textContent = sec;
+    selector.appendChild(opt);
   });
 }
 
-// Add html2canvas library
-const script = document.createElement("script");
-script.src = "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
-document.head.appendChild(script);
+function extractRoutine() {
+  const section = document.getElementById("sectionSelector").value;
+  if (!section || section === "Select Section") return alert("Please choose a section!");
+  const regex = new RegExp(`${section}[^]*?(?=CSE-|$)`, "gi");
+  const match = fullText.match(regex);
+  document.getElementById("routineDisplay").textContent = match ? match.join("\n\n") : "No routine found.";
+}
+
+function downloadImage() {
+  const display = document.getElementById("routineDisplay");
+  html2canvas(display).then((canvas) => {
+    const a = document.createElement("a");
+    a.download = "routine.png";
+    a.href = canvas.toDataURL("image/png");
+    a.click();
+  });
+}
+
+function toggleMode() {
+  document.body.classList.toggle("light");
+}
